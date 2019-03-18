@@ -12,6 +12,7 @@ import AFNetworking
 class HttpUtil: AFHTTPSessionManager {
     
     let baseUrl = "http://54.214.116.94:8888/"
+    //let baseUrl = "http://192.168.61.32:8888/"
     
     enum HTTPMethod {
         case GET

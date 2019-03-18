@@ -146,7 +146,7 @@
                                 </constraints>
                                 <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="23"/>
-                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="new-password"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5fw-Da-uhH">
                                 <rect key="frame" x="26" y="410.5" width="323" height="46"/>
@@ -164,10 +164,20 @@
                                     <action selector="signup:" destination="WCe-QX-h4J" eventType="touchUpInside" id="Ia5-LF-p3g"/>
                                 </connections>
                             </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Repeat Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="fiS-Ch-7Pr">
+                                <rect key="frame" x="26" y="333.5" width="323" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="8pN-op-Qvs"/>
+                                </constraints>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="fiS-Ch-7Pr" firstAttribute="leading" secondItem="cC7-HP-qU2" secondAttribute="leadingMargin" constant="10" id="1vJ-52-WkQ"/>
                             <constraint firstItem="5fw-Da-uhH" firstAttribute="leading" secondItem="cC7-HP-qU2" secondAttribute="leadingMargin" constant="10" id="2D3-1X-x4o"/>
                             <constraint firstItem="eu6-rM-27p" firstAttribute="centerY" secondItem="cC7-HP-qU2" secondAttribute="centerY" constant="-100" id="4kp-dJ-VtB"/>
                             <constraint firstAttribute="trailingMargin" secondItem="5fw-Da-uhH" secondAttribute="trailing" constant="10" id="7Gf-s5-reb"/>
@@ -178,12 +188,14 @@
                             <constraint firstItem="eu6-rM-27p" firstAttribute="centerX" secondItem="cC7-HP-qU2" secondAttribute="centerX" id="TBn-M9-4nd"/>
                             <constraint firstItem="A19-tb-GXP" firstAttribute="leading" secondItem="cC7-HP-qU2" secondAttribute="leadingMargin" constant="10" id="UwX-pm-hRM"/>
                             <constraint firstItem="A19-tb-GXP" firstAttribute="centerY" secondItem="cC7-HP-qU2" secondAttribute="centerY" constant="-160" id="VO5-Ne-Fph"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="fiS-Ch-7Pr" secondAttribute="trailing" constant="10" id="VrR-Ao-AAt"/>
                             <constraint firstItem="5fw-Da-uhH" firstAttribute="centerY" secondItem="cC7-HP-qU2" secondAttribute="centerY" constant="100" id="aeR-mN-exg"/>
                             <constraint firstAttribute="trailingMargin" secondItem="A19-tb-GXP" secondAttribute="trailing" constant="10" id="byh-cl-EKu"/>
                             <constraint firstItem="cqd-LP-UZg" firstAttribute="centerX" secondItem="cC7-HP-qU2" secondAttribute="centerX" id="fbp-Rx-XTa"/>
                             <constraint firstAttribute="trailingMargin" secondItem="eu6-rM-27p" secondAttribute="trailing" constant="10" id="hYe-Bf-J12"/>
                             <constraint firstItem="cqd-LP-UZg" firstAttribute="centerY" secondItem="cC7-HP-qU2" secondAttribute="centerY" constant="-40" id="lC4-Tu-KCa"/>
                             <constraint firstItem="5fw-Da-uhH" firstAttribute="centerX" secondItem="cC7-HP-qU2" secondAttribute="centerX" id="neL-vp-Hu2"/>
+                            <constraint firstItem="fiS-Ch-7Pr" firstAttribute="top" secondItem="cqd-LP-UZg" secondAttribute="bottom" constant="20" id="xNT-HP-KYA"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="z80-xh-VwI" appends="YES" id="Wye-q9-ZRh"/>
@@ -199,6 +211,8 @@
                     <connections>
                         <outlet property="name" destination="A19-tb-GXP" id="sxl-gA-F5m"/>
                         <outlet property="password" destination="cqd-LP-UZg" id="IDN-bG-ZXU"/>
+                        <outlet property="repeatPassword" destination="fiS-Ch-7Pr" id="djT-li-f0o"/>
+                        <outlet property="signUpBtn" destination="5fw-Da-uhH" id="3vR-gF-nzC"/>
                         <outlet property="userid" destination="eu6-rM-27p" id="qKS-Tv-iJB"/>
                     </connections>
                 </viewController>
@@ -210,7 +224,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2261.5999999999999" y="429.31034482758622"/>
+            <point key="canvasLocation" x="2261.5999999999999" y="428.63568215892059"/>
         </scene>
         <!--ログイン画面-->
         <scene sceneID="fAP-pO-9Fl">

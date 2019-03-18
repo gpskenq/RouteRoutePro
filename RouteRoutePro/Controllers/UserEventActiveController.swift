@@ -51,6 +51,7 @@ class UserEventController: UIViewController, MKMapViewDelegate, LocationDelegate
     var startTime: Int64 = 0
     
     var timer = Timer()
+    var lines: MKDirections.Response?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -154,8 +155,73 @@ class UserEventController: UIViewController, MKMapViewDelegate, LocationDelegate
                         LocationService.sharedInstance.eventStart = true
                         LocationService.sharedInstance.locationDataArray.append(newLocation)
                         self.setSpeed(sysTime: result.sysTime, startTime: result.startTime)
+                        
+                        self.dh(location: newLocation)
+                        
                     }
                 }
+            }
+        }
+    }
+    
+    // 导航
+    func dh(location: CLLocation){
+        let count = LocationService.sharedInstance.locationDataArray.count
+        if count == 1 {
+            let fromCoordinate = CLLocationCoordinate2D(latitude: location.coordinate.latitude,
+                                                        longitude: location.coordinate.longitude)
+            let tofromCoordinate = annotationgoal.coordinate
+            let fromPlaceMark = MKPlacemark(coordinate: fromCoordinate, addressDictionary: nil)
+            let toPlaceMark = MKPlacemark(coordinate: tofromCoordinate, addressDictionary: nil)
+            let fromItem = MKMapItem(placemark: fromPlaceMark)
+            let toItem = MKMapItem(placemark: toPlaceMark)
+            
+            let request = MKDirections.Request()
+            request.source = fromItem
+            request.destination = toItem
+            request.transportType = MKDirectionsTransportType.walking
+            request.requestsAlternateRoutes = true;
+            let directions = MKDirections(request: request)
+            
+            directions.calculate { (request, error) in
+                if error == nil {
+                    self.lines = request
+                    for route in request!.routes {
+                        self.mapView.addOverlay(route.polyline,level: MKOverlayLevel.aboveRoads)
+                        let routeSeconds = route.expectedTravelTime
+                        let routeDistance = route.distance
+                        print("distance between two points is \(routeSeconds) and \(routeDistance)")
+                    }
+                    
+                    for route in (self.lines?.routes)! {
+                        let point:UnsafeMutablePointer<MKMapPoint> = route.polyline.points()
+                        let count = route.polyline.pointCount
+                        let sPoint = point[0].coordinate
+                        let ePoint = point[count-1].coordinate
+                        let d = self.pointToLine(lat1: sPoint.latitude, lng1: sPoint.longitude,
+                                    lat2: ePoint.latitude,lng2: ePoint.longitude,
+                                    lat0: location.coordinate.latitude, lng0: location.coordinate.longitude)
+                        print("===================")
+                        print(d)
+                    }
+                    
+                }
+            }
+        }
+        if count > 1 && lines != nil {
+            for route in (lines?.routes)! {
+                let point:UnsafeMutablePointer<MKMapPoint> = route.polyline.points()
+                let count = route.polyline.pointCount - 1
+                
+                for i in 0..<count {
+                    let sPoint = point[i].coordinate
+                    let ePoint = point[i+1].coordinate
+                    let d = pointToLine(lat1: sPoint.latitude, lng1: sPoint.longitude,
+                                        lat2: ePoint.latitude,lng2: ePoint.longitude,
+                                        lat0: location.coordinate.latitude, lng0: location.coordinate.longitude)
+                    print(String(i) + "===================" + String(d))
+                }
+                
             }
         }
     }
@@ -169,7 +235,12 @@ class UserEventController: UIViewController, MKMapViewDelegate, LocationDelegate
             return circleRenderer
         }else{
             let polylineRenderer = MKPolylineRenderer(polyline: overlay as! MKPolyline)
-            polylineRenderer.strokeColor = UIColor.red
+            
+            if lines != nil && overlay === lines?.routes[0].polyline {
+                polylineRenderer.strokeColor = UIColor.green
+            }else{
+                polylineRenderer.strokeColor = UIColor.red
+            }
             polylineRenderer.alpha = 0.5
             polylineRenderer.lineWidth = 5.0
             return polylineRenderer
@@ -359,4 +430,67 @@ class UserEventController: UIViewController, MKMapViewDelegate, LocationDelegate
             self.distance.text = String(format:"%.1f", distanceAll + historyDistance)
         }
     }
+}
+
+
+extension UserEventController {
+    
+    func pointToLine(lat1:Double, lng1:Double, lat2:Double, lng2:Double,
+                     lat0: Double, lng0: Double) -> Double {
+        var space: Double = 0;
+        var a: Double;
+        var b: Double;
+        var c: Double;
+        a = lineSpace(lat1: lat1, lng1: lng1, lat2: lat2, lng2: lng2);// 线段的长度
+        b = lineSpace(lat1: lat1, lng1: lng1, lat2: lat0, lng2: lng0);// (x1,y1)到点的距离
+        c = lineSpace(lat1: lat2, lng1: lng2, lat2: lat0, lng2: lng0);// (x2,y2)到点的距离
+        if (c <= 0.000001 || b <= 0.000001) {
+            space = 0;
+            return space;
+        }
+        if (a <= 0.000001) {
+            space = b;
+            return space;
+        }
+        if (c * c >= a * a + b * b) {
+            space = b;
+            return space;
+        }
+        if (b * b >= a * a + c * c) {
+            space = c;
+            return space;
+        }
+        let p = (a + b + c) / 2;
+        let s = sqrt(p * (p - a) * (p - b) * (p - c));
+        space = 2 * s / a;
+        return space;
+    }
+    
+    //角度に基づいてラジアンを計算する
+    func radian(d:Double) -> Double {
+        return d * Double.pi/180.0
+    }
+    //ラジアンに基づく計算角度
+    func angle(r:Double) -> Double {
+        return r * 180/Double.pi
+    }
+    
+    //2点の緯度と経度に基づいて2点の距離を計算する
+    func lineSpace(lat1:Double,lng1:Double,lat2:Double,lng2:Double) -> Double {
+        let EARTH_RADIUS:Double = 6378137.0
+        
+        let radLat1:Double = radian(d: lat1)
+        let radLat2:Double = radian(d: lat2)
+        
+        let radLng1:Double = radian(d: lng1)
+        let radLng2:Double = radian(d: lng2)
+        
+        let a:Double = radLat1 - radLat2
+        let b:Double = radLng1 - radLng2
+        
+        var s:Double = 2 * asin(sqrt(pow(sin(a/2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b/2), 2)))
+        s = s * EARTH_RADIUS
+        return s
+    }
+    
 }

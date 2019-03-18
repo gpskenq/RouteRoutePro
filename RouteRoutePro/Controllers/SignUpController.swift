@@ -14,6 +14,8 @@ class SignUpController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var name: UITextField!
     @IBOutlet weak var userid: UITextField!
     @IBOutlet weak var password: UITextField!
+    @IBOutlet weak var repeatPassword: UITextField!
+    @IBOutlet weak var signUpBtn: UIButton!
     
     private lazy var userModel = UserModel()
     
@@ -23,6 +25,13 @@ class SignUpController: UIViewController, UITextFieldDelegate {
         self.name.delegate = self
         self.userid.delegate = self
         self.password.delegate = self
+        
+        name.addTarget(self, action: #selector(textChanged), for: .editingChanged)
+        userid.addTarget(self, action: #selector(textChanged), for: .editingChanged)
+        password.addTarget(self, action: #selector(textChanged), for: .editingChanged)
+        repeatPassword.addTarget(self, action: #selector(textChanged), for: .editingChanged)
+        signUpBtn.isUserInteractionEnabled = false
+        signUpBtn.alpha = 0.5
     }
     
     //complete keyboard
@@ -64,5 +73,20 @@ class SignUpController: UIViewController, UITextFieldDelegate {
             self.presentingViewController!.dismiss(animated: true, completion: nil)
         }
     }
+    
+    @objc func textChanged(textField: UITextField){
+        if self.name.text == nil || self.userid.text == nil || name.text == "" || userid.text == "" ||
+            self.userid.text == nil || self.password.text == nil || self.repeatPassword.text == nil {
+            signUpBtn.isUserInteractionEnabled = false
+            signUpBtn.alpha = 0.5
+        }else if self.password.text == self.repeatPassword.text{
+            signUpBtn.isUserInteractionEnabled = true
+            signUpBtn.alpha = 1
+        }else{
+            signUpBtn.isUserInteractionEnabled = false
+            signUpBtn.alpha = 0.5
+        }
+    }
+    
 }
 
